@@ -8,7 +8,7 @@ import { CONFIG } from './config';
  * @export
  * @class Results
  */
-export default class Results {
+export default class Results2 {
 
   /**
    * Creates an instance of Results.
@@ -17,8 +17,8 @@ export default class Results {
    * 
    * @memberOf Results
    */
-  constructor(callback) {
-    const uri = `${CONFIG.BASE}${CONFIG.RESULTS}`;
+  constructor(offset, callback) {
+    const uri = `${CONFIG.BASE}${CONFIG.RESULTS}?offset=${offset}`;
 
     request({ uri }, (error, response, body) => {
       const $ = cheerio.load(body, {
@@ -34,8 +34,8 @@ export default class Results {
         const team1 = el.children('.team-cell').first();
         const team2 = el.children('.team-cell').last();
         const matchId = $(element).children('a').attr('href');
-        const maps = el.find('.map');
         const matchTime = parseInt($(element).attr('data-zonedgrouping-entry-unix'));
+        const maps = el.find('.map');
         const result1 = el.find('.result-score').children('span').first();
         const result2 = el.find('.result-score').children('span').last();
 
