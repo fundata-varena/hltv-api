@@ -1,5 +1,5 @@
 import express from 'express';
-import { getNews, getResults, getMatches } from '../src/index';
+import { getNews, getResults, getMatches, getMatchDetails } from '../src/index';
 
 const app = express();
 
@@ -9,6 +9,11 @@ app.get('/', (req, res) => {
 
 app.get('/results', (req, res) => {
   getResults(results => res.json(results));
+});
+
+app.get('/match-detail/:matchId(*)', (req, res) => {
+  const { matchId } = req.params;
+  getMatchDetails(matchId, (stats) => res.json(stats));
 });
 
 app.get('/:matchId(*)', (req, res) => {
