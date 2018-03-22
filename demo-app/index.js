@@ -1,5 +1,5 @@
 import express from 'express';
-import { getNews, getResults, getMatches, getMatchDetails } from '../src/index';
+import { getNews, getResultsByOffset, getResults, getMatches, getMatchDetails } from '../src/index';
 
 const app = express();
 
@@ -8,7 +8,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/results', (req, res) => {
-  getResults(results => res.json(results));
+  if (req.query.offset) { // if offset is set, use getResultsByOffset
+    getResultsByOffset(req.query.offset, results => res.json(results));
+  } else {
+    getResults(results => res.json(results));
+  }
 });
 
 app.get('/match-detail/:matchId(*)', (req, res) => {
