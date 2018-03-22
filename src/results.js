@@ -44,12 +44,14 @@ export default class Results {
           team1: {
             name: team1.find('.team').text(),
             crest: team1.find('img').attr('src'),
-            result: parseInt(result1.text())
+            result: parseInt(result1.text()),
+            is_win: result1.hasClass('score-won')
           },
           team2: {
             name: team2.find('.team').text(),
             crest: team2.find('img').attr('src'),
-            result: parseInt(result2.text())
+            result: parseInt(result2.text()),
+            is_win: result2.hasClass('score-won')
           },
           matchId
         };
