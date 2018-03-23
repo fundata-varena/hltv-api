@@ -5,7 +5,7 @@ import util from 'util';
 
 /**
  * Scraping matches
- * 
+ *
  * @export
  * @class Matches
  */
@@ -13,10 +13,10 @@ export default class MatchDetail {
 
   /**
    * Creates an instance of Matches.
-   * 
+   *
    * @param {string} matchId
-   * @param {any} callback 
-   * 
+   * @param {any} callback
+   *
    * @memberOf Matches
    */
   constructor(matchId, callback) {
@@ -35,6 +35,23 @@ export default class MatchDetail {
       const mapsContainer = $('div.maps');
       const mapHolders = mapsContainer.find('div').first().children().last().children();
       const rounds = this.parseRoundsInfo(mapHolders, $);
+      const boText = mapsContainer.find('.veto-box').text().trim();
+
+      let roundCount = null;
+      let boBaseText = 'Best of ';
+      let index = boText.indexOf(boText);
+      if (index > -1) {
+        let arr = boText.slice(index+ boBaseText.length).split(' ');
+        if (arr.length > 0) {
+            let numVal = parseInt(arr[0]);
+            if (!isNaN(numVal)) {
+                roundCount = numVal;
+            }
+        }
+      }
+      if (roundCount === null) {
+          roundCount = rounds.length;
+      }
 
       // parse team related info
       const teamsInfo = this.parseTeamsInfo($('body'));
@@ -42,6 +59,7 @@ export default class MatchDetail {
       const matchDetail = {
         teams_info: teamsInfo,
         round_scores: rounds,
+        round_count: roundCount,
         total_player_stats: playerStats,
       };
 
@@ -159,7 +177,7 @@ export default class MatchDetail {
       rounds.push({
         map_name: mapName,
         map_uri: mapUrl,
-        score: score 
+        score: score
       });
     });
 
@@ -177,10 +195,19 @@ export default class MatchDetail {
     let eventName = eventLink.attr('title');
     let link = eventLink.attr('href');
 
+    let countDownText = timeEvent.find('.countdown').text().trim();
+    let match_status = 'wait';
+    if (countDownText === 'LIVE') {
+        match_status = 'start';
+    } else if (countDownText === 'Match over') {
+        match_status = 'end';
+    }
+
     return {
       team1: this.parseTeamInfo(team1Container, 1),
       team2: this.parseTeamInfo(team2Container, 2),
       match_time: unixTime,
+      match_status: match_status,
       event_name: eventName,
       event_uri: link
     };
