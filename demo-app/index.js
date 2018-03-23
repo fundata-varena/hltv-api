@@ -1,5 +1,5 @@
 import express from 'express';
-import { getNews, getResultsByOffset, getResults, getMatches, getMatchDetails, MatchScheduleHandler } from '../src/index';
+import { getNews, getResultsByOffset, getResults, getMatches, getMatchDetails, MatchScheduleHandler, EventsHandler } from '../src/index';
 
 const app = express();
 
@@ -13,6 +13,23 @@ app.get('/results', (req, res) => {
   } else {
     getResults(results => res.json(results));
   }
+});
+
+app.get('/events', (req, res) => {
+    const handler = new EventsHandler((ok, error) => {
+        if (error) {
+            res.status(500).send(error);
+            return;
+        }
+
+        const onGoing = handler.getAllOngoingEvents();
+        const upcoming = handler.getUpcommingEvents();
+
+        res.json({
+            on_going: onGoing,
+            upcoming: upcoming
+        });
+    });
 });
 
 app.get('/schedules', (req, res) => {
