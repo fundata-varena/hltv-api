@@ -5,3 +5,4 @@ coverage/
 dist/
 .nyc_output
 .vscode
+**/*.swp
