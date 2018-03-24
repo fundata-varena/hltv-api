@@ -122,12 +122,24 @@ export default class MatchSchedule {
         let $eventRow = $row.find('.event');
         const eventName = $eventRow.find('.event-name').text();
         const eventLogo = $eventRow.find('>img').attr('src');
+        const $starCell = $row.find('td.star-cell');
+
+        let mapText = $starCell.find('.map-text').text().trim().toLowerCase();
+        let boNum = 1;
+        if (mapText.indexOf('bo') > -1) {
+            let numText = mapText.slice(2);
+            let tmpNum = parseInt(numText);
+            if (!isNaN(tmpNum)) {
+                boNum = tmpNum;
+            }
+        }
 
         matches.push({
             match_id: matchId,
             match_time: matchTime ? parseInt(matchTime)/1000 : 0,
             event_name: eventName,
             event_logo: eventLogo,
+            bo_num: boNum,
             team_infos: teamInfos
         });
     });
