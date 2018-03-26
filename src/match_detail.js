@@ -50,7 +50,7 @@ export default class MatchDetail {
         }
       }
       if (roundCount === null) {
-          roundCount = rounds.length;
+          roundCount = rounds.length > 1 ? 3 : 1;
       }
 
       // parse team related info
