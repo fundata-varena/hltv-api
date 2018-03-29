@@ -120,7 +120,7 @@ export default class Events{
   }
 
   buildLogoUrl (eventLogo) {
-    return eventLogo ? (eventLogo.startsWith('http') ? eventLogo : path.join(CONFIG.BASE, eventLogo)) : eventLogo;
+    return eventLogo ? (eventLogo.startsWith('http') ? eventLogo : (CONFIG.BASE + eventLogo)) : eventLogo;
   }
 
   getAllOngoingEvents() {
