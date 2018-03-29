@@ -67,7 +67,7 @@ export default class Events{
 
         events.push({
             event_id: eventId,
-            event_logo: eventLogo,
+            event_logo: this.buildLogoUrl(eventLogo),
             event_prize: eventPrize,
             event_name: eventName,
             event_location: eventLocation,
@@ -107,7 +107,7 @@ export default class Events{
 
         events.push({
             event_id: eventId,
-            event_logo: eventLogo ? (eventLogo.startsWith('http') ? eventLogo : path.join(CONFIG.BASE, eventLogo)) : eventLogo,
+            event_logo: this.buildLogoUrl(eventLogo),
             event_prize: eventPrize,
             event_name: eventName,
             event_location: eventLocation,
@@ -117,6 +117,10 @@ export default class Events{
     });
 
     return events;
+  }
+
+  buildLogoUrl (eventLogo) {
+    return eventLogo ? (eventLogo.startsWith('http') ? eventLogo : path.join(CONFIG.BASE, eventLogo)) : eventLogo;
   }
 
   getAllOngoingEvents() {
@@ -148,7 +152,7 @@ export default class Events{
 
         events.push({
             event_id: eventId,
-            event_logo: eventLogo,
+            event_logo: this.buildLogoUrl(eventLogo),
             event_name: eventName,
             event_start_time: eventStartTime,
             event_end_time: eventEndTime
