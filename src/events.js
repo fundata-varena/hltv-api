@@ -81,7 +81,7 @@ export default class Events{
         const eventId = $link.attr('href');
 
         const $logo = $link.find('>img');
-        const eventLogo = $link.attr('src');
+        const eventLogo = $logo.attr('src');
 
         const $firstTr = $link.find('tbody > tr').first();
         const eventName = $firstTr.find('td').first().text().trim();
