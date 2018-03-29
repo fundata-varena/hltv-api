@@ -1,5 +1,6 @@
 import request from 'request';
 import cheerio from 'cheerio';
+import path from 'path';
 import { CONFIG } from './config';
 
 const BestOfOneText = 'Best of 1';
@@ -106,7 +107,7 @@ export default class Events{
 
         events.push({
             event_id: eventId,
-            event_logo: eventLogo,
+            event_logo: eventLogo ? (eventLogo.startsWith('http') ? eventLogo : path.join(CONFIG.BASE, eventLogo)) : eventLogo,
             event_prize: eventPrize,
             event_name: eventName,
             event_location: eventLocation,
