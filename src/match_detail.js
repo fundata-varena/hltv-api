@@ -221,11 +221,19 @@ export default class MatchDetail {
     let teamId = teamContainer.find(util.format('.team%d-gradient>a', index)).attr('herf');
     let isWin = teamContainer.find(util.format('.team%d-gradient .won', index)).length > 0;
 
+    let score = 0;
+    if (isWin) {
+        score = parseInt(teamContainer.find(util.format('.team%d-gradient .won', index)).text());
+    } else {
+        score = parseInt(teamContainer.find(util.format('.team%d-gradient .lost', index)).text());
+    }
+
     return {
       team_id: teamId, // an uri for team page
       team_name: teamName,
       team_controuy: teamControuy,
       team_logo: teamLogo, // logo url
+      score: score,
       is_win: isWin
     };
   }
