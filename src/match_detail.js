@@ -185,6 +185,7 @@ export default class MatchDetail {
   }
 
   parseTeamsInfo(docRoot) {
+    const liveScoreMatchId = docRoot.find('#scoreboardElement').attr('data-scorebot-id');
     let teamsBox = docRoot.find('.teamsBox');
     let team1Container = teamsBox.children().first();
     let team2Container = teamsBox.children().last();
@@ -194,6 +195,7 @@ export default class MatchDetail {
     let eventLink = timeEvent.find('.event a');
     let eventName = eventLink.attr('title');
     let link = eventLink.attr('href');
+    let isLive = timeEvent.find('.countdown').attr('data-time-countdown') == 'LIVE';
 
     let countDownText = timeEvent.find('.countdown').text().trim();
     let match_status = 'wait';
@@ -209,6 +211,8 @@ export default class MatchDetail {
       match_time: unixTime,
       match_status: match_status,
       event_name: eventName,
+      is_live: isLive,
+      live_score_match_id: liveScoreMatchId,
       event_uri: link
     };
   }
