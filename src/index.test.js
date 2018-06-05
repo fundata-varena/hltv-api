@@ -1,6 +1,6 @@
 import { describe, it } from 'mocha';
 import { assert, expect } from 'chai';
-import { getNews, getResults, getMatches } from './index';
+import { getNews, getResults, getMatches, getWorldRankingTeams } from './index';
 import { CONFIG } from './config';
 
 let matchId;
@@ -64,6 +64,21 @@ describe('hltv-api', () => {
         done();
       });
     });
+
+    it('should have raning teams when we call `getWorldRankingTeams`', (done) => {
+      getWorldRankingTeams((err, teams) => {
+        console.log(teams)
+        assert.isNull(err)
+        assert.isArray(teams)
+        const team = teams[0]
+        expect(team.logo).to.contain('logo')
+        expect(team.name).to.have.length.above(2)
+        expect(team.position).above(0)
+        expect(team.points).above(0)
+        expect(team.change).to.approximately(-30, 30)
+        done()
+      })
+    })
 
   });
 

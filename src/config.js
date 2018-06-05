@@ -4,5 +4,6 @@ export const CONFIG = {
   RSS: '/rss',
   SCHEDULE: '/matches',
   EVENTS: '/events',
-  RESULTS: '/results'
+  RESULTS: '/results',
+  RANKING_TEAMS: '/ranking/teams',
 };

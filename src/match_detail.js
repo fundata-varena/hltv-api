@@ -22,7 +22,7 @@ export default class MatchDetail {
   constructor(matchId, callback) {
     const uri = `${CONFIG.BASE}/${matchId}`;
 
-    request({ uri }, (error, response, body) => {
+    request({ uri }, async (error, response, body) => {
 
       const $ = cheerio.load(body, {
         normalizeWhitespace: true
@@ -50,21 +50,84 @@ export default class MatchDetail {
         }
       }
       if (roundCount === null) {
-          roundCount = rounds.length > 1 ? 3 : 1;
+        roundCount = rounds.length > 1 ? 3 : 1;
       }
 
       // parse team related info
       const teamsInfo = this.parseTeamsInfo($('body'));
+
+      const detailPlayerStatsUrl = $('.matchstats').find('.stats-detailed-stats a').attr('href')
+      const detailPlayerStats = await this.fetchDetailPlayerStats(detailPlayerStatsUrl);
 
       const matchDetail = {
         teams_info: teamsInfo,
         round_scores: rounds,
         round_count: roundCount,
         total_player_stats: playerStats,
+        detail_player_stats: detailPlayerStats,
       };
 
       callback(matchDetail, error);
     });
+  }
+
+  fetchDetailPlayerStats(detailPlayerStatsUrl) {
+    return new Promise((resolve, reject) => {
+      request(detailPlayerStatsUrl, (err, res, body) => {
+        if (err) {
+          return reject(err);
+        }
+
+        try {
+          const $ = cheerio.load(body, {
+            normalizeWhitespace: true
+          });
+          const urls = $('.stats-match-maps a').not(':first').map((i, elem) => {
+            return $(elem).attr('href')
+          }).get();
+
+          // bo1
+          if (urls.length == 0) {
+            const stats = this.parseDetailPlayerStatOfMap(body)
+            return resolve([stats])
+          }
+
+          // bo[more]
+          Promise.all(urls.map((url) => {
+            return this.fetchDetailPlayerStatOfMap(url).then(this.parseDetailPlayerStatOfMap.bind(this))
+          }))
+          .then((list) => {
+            resolve(list)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+
+        } catch (e) {
+          reject(e);
+        }
+      })
+    })
+  }
+
+  fetchDetailPlayerStatOfMap(url) {
+    return new Promise((resolve, reject) => {
+      request(url, (err, response, body) => {
+        if (err != null) {
+          return reject(err)
+        }
+        resolve(body)
+      })
+    })
+  }
+
+  parseDetailPlayerStatOfMap(body) {
+    const $ = cheerio.load(body, {
+      normalizeWhitespace: true
+    });
+    $('.stats-section .stats-table')
+    let stats = []
+    return stats
   }
 
   parseTotalPlayerStats(allContent, $) {
@@ -138,7 +201,9 @@ export default class MatchDetail {
 
       let ele = el.find('.results');
       let scoreTexts = ele.text().replace(/\W+/g, ' ').trim().split(' ');
-      // let winScore = parseInt(ele.find('.won').text());
+      const roles = $('.results').find('.t, .ct').map((i, elem) => {
+        return $(elem).hasClass('ct') ? 1 : 0
+      }).get()
 
       let score = {};
 
@@ -156,6 +221,9 @@ export default class MatchDetail {
 
         score.half1_team1_score = half1Team1Score;
         score.half1_team2_score = half1Team2Score;
+
+        score.half1_team1_role = roles[0]
+        score.half1_team2_role = roles[1]
       }
 
       if (scoreTexts.length >= 6) {
@@ -164,6 +232,9 @@ export default class MatchDetail {
 
         score.half2_team1_score = half2Team1Score;
         score.half2_team2_score = half2Team2Score;
+
+        score.half2_team1_role = roles[2]
+        score.half2_team2_role = roles[3]
       }
 
       if (scoreTexts.length >= 8) {
@@ -172,6 +243,9 @@ export default class MatchDetail {
 
         score.extra_team1_score = extraTeam1Score;
         score.extra_team2_score = extraTeam2Score;
+
+        score.extra_team1_role = roles[4]
+        score.extra_team2_role = roles[5]
       }
 
       rounds.push({
