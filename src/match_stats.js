@@ -1,4 +1,3 @@
-import 'babel-polyfill'
 import request from 'request';
 import cheerio from 'cheerio';
 import { CONFIG } from './config';
@@ -33,7 +32,7 @@ export default class MatchStats {
         return callback(null, e)
       }
 
-      callback(stats, null);
+      callback(null, stats);
     });
   }
 
