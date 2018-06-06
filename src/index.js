@@ -6,6 +6,7 @@ import MatchDetail from './match_detail';
 import MatchSchedule from './match_schedule';
 import Events from './events';
 import {WorldRankingTeams, RegionRankingTeams} from './ranking_teams';
+import MatchStats from './match_stats';
 
 export const getNews = (cb) => new RSS('news', cb);
 export const getResults = (cb) => new Results(cb);
@@ -16,3 +17,4 @@ export const MatchScheduleHandler = MatchSchedule;
 export const EventsHandler = Events;
 export const getWorldRankingTeams = (cb) => new WorldRankingTeams(cb)
 export const getRegionRankingTeams = (region, cb) => new RegionRankingTeams(region, cb)
+export const getMatchStats = (statsId, cb) => new MatchStats(statsId, cb)

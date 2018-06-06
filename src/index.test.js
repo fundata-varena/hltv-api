@@ -1,9 +1,10 @@
 import { describe, it } from 'mocha';
 import { assert, expect } from 'chai';
-import { getNews, getResults, getMatches, getWorldRankingTeams } from './index';
+import { getNews, getResults, getMatches, getMatchDetails, getWorldRankingTeams, getMatchStats } from './index';
 import { CONFIG } from './config';
 
 let matchId;
+let statsId;
 
 describe('hltv-api', () => {
 
@@ -65,9 +66,24 @@ describe('hltv-api', () => {
       });
     });
 
+    it('should have raning teams when we call `getMatchDetails`', (done) => {
+      getMatchDetails(matchId, (details, err) => {
+        assert.isNull(err)
+        done()
+      })
+    })
+
+    it('should have raning teams when we call `getMatchStats`', (done) => {
+      getMatchStats('/stats/matches/mapstatsid/68202/virtue-vs-c4', (stats, err) => {
+        assert.isNull(err)
+        assert.isArray(stats.roundHistory.team1.halfs)
+        assert.isArray(stats.roundHistory.team2.halfs)
+        done()
+      })
+    })
+
     it('should have raning teams when we call `getWorldRankingTeams`', (done) => {
       getWorldRankingTeams((err, teams) => {
-        console.log(teams)
         assert.isNull(err)
         assert.isArray(teams)
         const team = teams[0]

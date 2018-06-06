@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 import request from 'request';
 import cheerio from 'cheerio';
 import { CONFIG } from './config';
@@ -21,113 +22,64 @@ export default class MatchDetail {
    */
   constructor(matchId, callback) {
     const uri = `${CONFIG.BASE}/${matchId}`;
-
     request({ uri }, async (error, response, body) => {
-
-      const $ = cheerio.load(body, {
-        normalizeWhitespace: true
-      });
-
-      const allContent = $('.matchstats').find('#all-content');
-      const playerStats = this.parseTotalPlayerStats(allContent, $);
-
-      // for rounds
-      const mapsContainer = $('div.maps');
-      const mapHolders = mapsContainer.find('div').first().children().last().children();
-      const rounds = this.parseRoundsInfo(mapHolders, $);
-      const boText = mapsContainer.find('.veto-box').text().trim();
-
-      let roundCount = null;
-      let boBaseText = 'Best of ';
-      let index = boText.indexOf(boText);
-      if (index > -1) {
-        let arr = boText.slice(index+ boBaseText.length).split(' ');
-        if (arr.length > 0) {
-            let numVal = parseInt(arr[0]);
-            if (!isNaN(numVal)) {
-                roundCount = numVal;
-            }
-        }
+      if (error != null) {
+        return callback(null, error)
       }
-      if (roundCount === null) {
-        roundCount = rounds.length > 1 ? 3 : 1;
+      if (response.statusCode != 200) {
+        return callback(null, new Error(`HTTP response statusCode is ${response.statusCode}`))
       }
 
-      // parse team related info
-      const teamsInfo = this.parseTeamsInfo($('body'));
+      let matchDetail = {}
 
-      const detailPlayerStatsUrl = $('.matchstats').find('.stats-detailed-stats a').attr('href')
-      const detailPlayerStats = await this.fetchDetailPlayerStats(detailPlayerStatsUrl);
+      try {
+        const $ = cheerio.load(body, {
+          normalizeWhitespace: true
+        });
 
-      const matchDetail = {
-        teams_info: teamsInfo,
-        round_scores: rounds,
-        round_count: roundCount,
-        total_player_stats: playerStats,
-        detail_player_stats: detailPlayerStats,
-      };
+        const allContent = $('.matchstats').find('#all-content');
+        const playerStats = this.parseTotalPlayerStats(allContent, $);
 
-      callback(matchDetail, error);
-    });
-  }
+        // for rounds
+        const mapsContainer = $('div.maps');
+        const mapHolders = mapsContainer.find('div').first().children().last().children();
+        const rounds = this.parseRoundsInfo(mapHolders, $);
+        const boText = mapsContainer.find('.veto-box').text().trim();
 
-  fetchDetailPlayerStats(detailPlayerStatsUrl) {
-    return new Promise((resolve, reject) => {
-      request(detailPlayerStatsUrl, (err, res, body) => {
-        if (err) {
-          return reject(err);
-        }
-
-        try {
-          const $ = cheerio.load(body, {
-            normalizeWhitespace: true
-          });
-          const urls = $('.stats-match-maps a').not(':first').map((i, elem) => {
-            return $(elem).attr('href')
-          }).get();
-
-          // bo1
-          if (urls.length == 0) {
-            const stats = this.parseDetailPlayerStatOfMap(body)
-            return resolve([stats])
+        let roundCount = null;
+        let boBaseText = 'Best of ';
+        let index = boText.indexOf(boText);
+        if (index > -1) {
+          let arr = boText.slice(index+ boBaseText.length).split(' ');
+          if (arr.length > 0) {
+              let numVal = parseInt(arr[0]);
+              if (!isNaN(numVal)) {
+                  roundCount = numVal;
+              }
           }
-
-          // bo[more]
-          Promise.all(urls.map((url) => {
-            return this.fetchDetailPlayerStatOfMap(url).then(this.parseDetailPlayerStatOfMap.bind(this))
-          }))
-          .then((list) => {
-            resolve(list)
-          })
-          .catch((err) => {
-            reject(err)
-          })
-
-        } catch (e) {
-          reject(e);
         }
-      })
-    })
-  }
-
-  fetchDetailPlayerStatOfMap(url) {
-    return new Promise((resolve, reject) => {
-      request(url, (err, response, body) => {
-        if (err != null) {
-          return reject(err)
+        if (roundCount === null) {
+          roundCount = rounds.length > 1 ? 3 : 1;
         }
-        resolve(body)
-      })
-    })
-  }
 
-  parseDetailPlayerStatOfMap(body) {
-    const $ = cheerio.load(body, {
-      normalizeWhitespace: true
+        // parse team related info
+        const teamsInfo = this.parseTeamsInfo($('body'));
+        const matchStatsUrl = $('.matchstats .stats-detailed-stats a').attr('href')
+
+        matchDetail = {
+          teams_info: teamsInfo,
+          round_scores: rounds,
+          round_count: roundCount,
+          total_player_stats: playerStats,
+          match_stats_url: matchStatsUrl,
+        };
+
+      } catch (e) {
+        return callback(null, e)
+      }
+
+      callback(matchDetail, null);
     });
-    $('.stats-section .stats-table')
-    let stats = []
-    return stats
   }
 
   parseTotalPlayerStats(allContent, $) {
