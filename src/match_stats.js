@@ -23,9 +23,9 @@ export default class MatchStats {
         const roundHistory = this.parseRoundHistory(body)
 
         stats = {
-          playerStats,
-          mapStatsIds,
-          roundHistory,
+          player_stats: playerStats,
+          map_stats_ids: mapStatsIds,
+          round_history: roundHistory,
         };
 
       } catch(e) {
@@ -87,8 +87,8 @@ export default class MatchStats {
 
       $(table).find('tbody tr td.st-player').parent().each((j, tr) => {
         const $tr = $(tr)
-        const playerName = $tr.find('.st-player a').text()
-        const playerCountryImg = $tr.find('.st-player .gtSmartphone-only img').attr('src')
+        const name = $tr.find('.st-player a').text()
+        const country_img = $tr.find('.st-player .gtSmartphone-only img').attr('src')
         const kills = $tr.find('.st-kills').text()
         const assists = $tr.find('.st-assists').text()
         const deaths = $tr.find('.st-deaths').text()
@@ -98,8 +98,8 @@ export default class MatchStats {
         const fkdiff = $tr.find('.st-fkdiff').text()
         const rating = $tr.find('.st-rating').text()
         const player = {
-          playerName,
-          playerCountryImg,
+          name,
+          country_img,
           kills,
           assists,
           deaths,

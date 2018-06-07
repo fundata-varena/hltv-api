@@ -64,6 +64,7 @@ export default class MatchDetail {
         // parse team related info
         const teamsInfo = this.parseTeamsInfo($('body'));
         const matchStatsUrl = $('.matchstats .stats-detailed-stats a').attr('href')
+        const mapBP = this.parseMapBP($('body'), $)
 
         matchDetail = {
           teams_info: teamsInfo,
@@ -71,6 +72,7 @@ export default class MatchDetail {
           round_count: roundCount,
           total_player_stats: playerStats,
           match_stats_url: matchStatsUrl,
+          map_bp: mapBP,
         };
 
       } catch (e) {
@@ -79,6 +81,16 @@ export default class MatchDetail {
 
       callback(matchDetail, null);
     });
+  }
+
+  parseMapBP(docBody, $) {
+    let bpList = docBody.find('.match-page .maps .veto-box .padding div').map((i, elem) => {
+      return $(elem).text()
+    }).get()
+    bpList = bpList.filter((txt) => {
+      return /\d\.\s\w/.test(txt)
+    })
+    return bpList
   }
 
   parseTotalPlayerStats(allContent, $) {
@@ -153,7 +165,7 @@ export default class MatchDetail {
       let ele = el.find('.results');
       let scoreTexts = ele.text().replace(/\W+/g, ' ').trim().split(' ');
       const roles = $('.results').find('.t, .ct').map((i, elem) => {
-        return $(elem).hasClass('ct') ? 1 : 0
+        return $(elem).hasClass('ct') ? 'CT' : 'T'
       }).get()
 
       let score = {};
