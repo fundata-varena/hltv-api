@@ -42,7 +42,13 @@ class RankingTeams {
       const $row = $(row);
 
       const logo = $row.find('.team-logo img').attr('src');
-      const name = $row.find('.name').text();
+      let dataurl = $row.find('.name').attr('data-url') || ''
+      let datalist= dataurl.match(/.team\/(\d+)\/\w/)
+      let teamId
+      if (datalist && datalist.length > 0) {
+        teamId = datalist[1]
+      }
+
       const position = parseInt($row.find('.position').text().split('#')[1]);
       const points = parseInt($row.find('.points').text().replace('(', '').replace(' points)', ''));
       let change = $row.find('.change').text();
@@ -51,6 +57,7 @@ class RankingTeams {
       teams.push({
         logo,
         name,
+        teamId,
         position,
         points,
         change,
