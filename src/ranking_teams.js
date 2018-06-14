@@ -42,6 +42,7 @@ class RankingTeams {
       const $row = $(row);
 
       const logo = $row.find('.team-logo img').attr('src');
+      const name = $row.find('.name').text()
       let dataurl = $row.find('.name').attr('data-url') || ''
       let datalist= dataurl.match(/.team\/(\d+)\/\w/)
       let teamId
