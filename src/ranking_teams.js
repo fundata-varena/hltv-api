@@ -43,7 +43,7 @@ class RankingTeams {
 
       const logo = $row.find('.team-logo img').attr('src');
       const name = $row.find('.name').text()
-      let dataurl = $row.find('.name').attr('data-url') || ''
+      let dataurl = $row.find('.lineup-con a.moreLink').eq(0).attr('href') || ''
       let datalist= dataurl.match(/.team\/(\d+)\/\w/)
       let teamId
       if (datalist && datalist.length > 0) {
