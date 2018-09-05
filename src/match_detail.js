@@ -164,7 +164,7 @@ export default class MatchDetail {
 
       let ele = el.find('.results');
       let scoreTexts = ele.text().replace(/\W+/g, ' ').trim().split(' ');
-      const roles = $('.results').find('.t, .ct').map((i, elem) => {
+      const roles = el.find('.t, .ct').map((i, elem) => {
         return $(elem).hasClass('ct') ? 'CT' : 'T'
       }).get()
 
