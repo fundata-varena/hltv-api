@@ -259,7 +259,7 @@ export default class MatchDetail {
     let teamControuy = teamContainer.find('>img').attr('title');
 
     let teamLogo = teamContainer.find(util.format('.team%d-gradient img', index)).attr('src');
-    let teamId = teamContainer.find(util.format('.team%d-gradient>a', index)).attr('herf');
+    let teamId = teamContainer.find(util.format('.team%d-gradient>a', index)).attr('href');
     let isWin = teamContainer.find(util.format('.team%d-gradient .won', index)).length > 0;
 
     let score = 0;
