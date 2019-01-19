@@ -260,13 +260,16 @@ export default class MatchDetail {
 
     let teamLogo = teamContainer.find(util.format('.team%d-gradient img', index)).attr('src');
     let teamId = teamContainer.find(util.format('.team%d-gradient>a', index)).attr('href');
+    let isTie = teamContainer.find(util.format('.team%d-gradient .tie', index)).length > 0;
     let isWin = teamContainer.find(util.format('.team%d-gradient .won', index)).length > 0;
 
     let score = 0;
-    if (isWin) {
-        score = parseInt(teamContainer.find(util.format('.team%d-gradient .won', index)).text());
+    if (isTie) {
+      score = parseInt(teamContainer.find(util.format('.team%d-gradient .tie', index)).text());
+    } else if (isWin) {
+      score = parseInt(teamContainer.find(util.format('.team%d-gradient .won', index)).text());
     } else {
-        score = parseInt(teamContainer.find(util.format('.team%d-gradient .lost', index)).text());
+      score = parseInt(teamContainer.find(util.format('.team%d-gradient .lost', index)).text());
     }
 
     return {
